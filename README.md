@@ -68,11 +68,10 @@ You will need the following installed to build and run this project
 
 ### Demo
 
-Pre-Pipelining:
+**Pre-Pipelining:**
 * This design implements the FIR filter using a standard transposed structure without any pipeline registers.  
 * Data flows through each multiplier and adder in a single clock cycle which results in a long combinational path.  
 * Because there are no intermediate registers, the design achieves a higher Fmax in synthesis but is more sensitive to timing closure and may limit scalability for large filters.
-
 
 <img width="1185" height="235" alt="image" src="https://github.com/user-attachments/assets/e3662639-2d88-4c95-9610-7ce052d8bcff" />
 
@@ -82,7 +81,7 @@ Pre-Pipelining:
 
 
 
-Post Pipelining:
+**Post Pipelining:**
 * This design introduces pipeline registers between key stages of the adder tree and multiplier outputs.  
 * Pipelining shortens the critical path and allows for higher throughput on real hardware, even though the maximum operating frequency (Fmax) may drop slightly in simulation due to added latency.  
 * The increased register count improves timing stability and makes it easier to meet performance targets on an FPGA, at the cost of slightly higher resource usage and latency.
@@ -93,7 +92,7 @@ Post Pipelining:
 
 
 
-### Results
+## Results
 For our purposes, we choose to analyze three different architectures and compare across
 multiple Quartus optimization modes (Balanced, Performance, Power, and Area).
 Each design was synthesized and simulated to collect logic utilization, register count,
@@ -106,12 +105,36 @@ maximum operating frequency (Fmax), and power consumption.
 * Fmax increased from **~584 MHz** (Balanced) to **~744 MHz** (Performance).
 * Power consumption was lowest in Balanced/Performance (**~354 mW**) and
 rose to **~420 mW** in Power/Area optimizations.
+<img width="975" height="518" alt="image" src="https://github.com/user-attachments/assets/6d4222ff-361f-4be3-b197-6dbed041b790" />
+
+
+
+
+
+
+
+
+
 
 **Transpose Form (Pre-Pipelining)**
 * Logic utilization held at **≈48 ALMs**, with **44–53** registers.
 * Achieved the highest operating frequency, peaking at **~954 MHz** in
 Performance mode and dropping to **~692 MHz** in Power mode.
 * Power remained consistently near **~420 mW** across all modes.
+<img width="975" height="336" alt="image" src="https://github.com/user-attachments/assets/7ff8fe73-127d-4965-bfba-d59d0035c664" />
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 **Transpose Form (Post-Pipelining)**
 * Logic utilization stayed near **48 ALMs** but register count increased
@@ -119,6 +142,8 @@ significantly due to added pipeline stages.
 * Fmax decreased to approximately **110–115 MHz** across all modes,
 reflecting the additional clock cycles introduced by pipelining.
 * Power remained steady at **~420 mW**.
+<img width="975" height="338" alt="image" src="https://github.com/user-attachments/assets/d12f268e-f25f-41c5-9a61-be457cfaae90" />
+
 
 
 ## Key Takeaways
