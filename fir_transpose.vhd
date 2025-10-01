@@ -1,0 +1,57 @@
+--VHDL Lab 10
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity fir_transpose is
+  generic (
+    NUM_COEF  : natural := 11;
+    BITS_COEF : natural := 4;
+    BITS_IN   : natural := 4;
+    BITS_OUT  : natural := 10
+  );
+  port (
+    clk     : in  std_logic;
+    rst     : in  std_logic;
+    x    	: in  std_logic_vector(BITS_IN-1 downto 0);
+    y   		: out std_logic_vector(BITS_OUT-1 downto 0)
+  );
+end fir_transpose;
+
+architecture behavioral of fir_transpose is
+
+	type int_array is array (NUM_COEF-1 downto 0) of integer range 2**(BITS_COEF-1)-1 downto -2**(BITS_COEF-1);
+	constant coef	: int_array := (-8, -5, -5, -1, 1, 2, 2, 3, 5, 7, 7);
+	
+	-- Internal Signals
+	type signed_array	is array (natural range <>) of signed;
+	signal shift_reg	: signed_array (NUM_COEF-1 downto 0)(BITS_COEF-1 downto 0);
+	signal prod			: signed_array (NUM_COEF-1 downto 0)(BITS_IN + BITS_COEF-1 downto 0);
+	signal sum 			: signed_array (NUM_COEF-1 downto 0)(BITS_OUT-1 downto 0);
+
+begin
+
+  process(clk, rst)
+  begin
+		 if rst = '0' then
+			shift_reg <= (others => (others => '0'));
+		elsif rising_edge(clk) then 
+			shift_reg <= signed(x) & shift_reg(NUM_COEF-2 downto 0);
+		end if;
+	end process;
+		
+	-- Multipiers
+	mult: for i in NUM_COEF-1 downto 0 generate
+		prod(i) <= to_signed(coef(i), BITS_COEF)*shift_reg(i);
+	end generate;
+	
+	-- Adder
+	sum(NUM_COEF-1) <= resize(prod(NUM_COEF-1), BITS_OUT);
+	adder: for i in NUM_COEF-2 downto 0 generate
+		sum(i) <= sum(i-1) + prod(i);
+	end generate;
+
+	y <= std_logic_vector(sum(NUM_COEF-1));
+		
+end behavioral;

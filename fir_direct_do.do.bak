@@ -1,0 +1,22 @@
+
+vcom -2008 fir_transposeddd.vhd
+vsim work.fir_testing
+radix decimal
+
+add wave -divider "FIR Project"
+add wave -divider "By Raquel and Garrison"
+add wave -divider "4/3/2025"
+add wave -divider "Inputs:"
+add wave rst clk x
+add wave -divider "Internals:"
+add wave shift_reg 
+add wave -divider "Outputs:"
+add wave y
+
+force rst 0 0ns, 1 10ns
+force clk 1 0ns, 0 10ns -r 20ns
+force x 0 0ns, 1 10ns, 0 30ns
+
+run 300ns
+wave zoomfull
+configure wave -gridperiod 50ns -timelineunits ns
